@@ -42,6 +42,21 @@ module.exports = function(vonage) {
         res.sendFile(result)
     })
 
+    router.get("/status", (req, res) => {
+        res.json({error: false, message: "OK", inProgress: fs.existsSync(path.join(__dirname, "../data/.incall"))})
+        // const callID = fs.readFileSync(path.join(__dirname, "../data/.incall"))
+        // vonage.calls.get(callID, (error, response) => {
+        //     if (error) {
+        //         //console.error(error)
+        //         console.error(error.body)
+        //         res.status(500)
+        //         res.json({error:true, message:"Belső hiba történt"})
+        //     } else {
+        //         res.json(response)
+        //     }
+        // })
+    })
+
     router.post("/end", sumakAuth, (req, res) => {
         if (!fs.existsSync(path.join(__dirname, "../data/.incall"))) {
             res.status(404)

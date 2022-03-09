@@ -23,6 +23,7 @@ Array.prototype.choose = function() { this[Math.floor(Math.random() * this.lengt
 
 const app = express()
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 app.use(require("morgan")("tiny"))
 
 if (!fs.existsSync("./data/recordings")){
