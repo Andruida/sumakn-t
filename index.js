@@ -17,6 +17,7 @@ const Vonage = require('@vonage/server-sdk')
 const express = require('express')
 // const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
+const path = require('path');
 
 Array.prototype.choose = function() { this[Math.floor(Math.random() * this.length)]};
 
@@ -24,8 +25,11 @@ const app = express()
 app.use(express.json());
 app.use(require("morgan")("tiny"))
 
-if (!fs.existsSync("./data")){
-    fs.mkdirSync("./data", { recursive: true });
+if (!fs.existsSync("./data/recordings")){
+    fs.mkdirSync("./data/recordings", { recursive: true });
+}
+if (fs.existsSync(path.join(__dirname, "data/.incall"))) {
+    fs.rmSync(path.join(__dirname, "data/.incall"))
 }
 
 const vonage = new Vonage({
@@ -33,8 +37,8 @@ const vonage = new Vonage({
     privateKey: __dirname + "/private.key"
 })
 
-app.use("/api", require("./routers/api")(Vonage))
-app.use("/events", require("./routers/events"))
+app.use("/api", require("./routers/api")(vonage))
+app.use("/events", require("./routers/events")(vonage))
 app.use(express.static('public'))
 
 app.listen(config.port, () => {

@@ -5,6 +5,7 @@ const fs = require("fs");
 const { exec } = require("child_process");
 const {v4: uuidv4} = require("uuid");
 const shellescape = require('shell-escape');
+const config  = require("../config.json");
 require("./Float32Array.concat");
 
 const TEMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "transcoder-storage-"));
@@ -24,8 +25,9 @@ module.exports = async function (nums) {
         return false
     }
 
-    var pcm_data = new Float32Array(0);
-    var sampleRate;
+    
+    var sampleRate = 44100;
+    var pcm_data = new Float32Array(sampleRate*1);
     for (const item of nums) {
         const filepath = path.join(__dirname, "../audio", number_map[item][Math.floor(Math.random() * number_map[item].length)]);
         const buffer = await fs.promises.readFile(filepath)
@@ -46,10 +48,12 @@ module.exports = async function (nums) {
 
 
     return await new Promise((resolve, reject) => {
-        exec(shellescape(["ffmpeg", "-i", path.join(TEMP_DIR, tempfileID+".wav"), path.join(TEMP_DIR, tempfileID+".mp3")]), 
+        exec(shellescape(["ffmpeg", "-i", path.join(TEMP_DIR, tempfileID+".wav"), "-filter:a", "volume="+(config.volume || 1)+",loudnorm", path.join(TEMP_DIR, tempfileID+".mp3")]), 
             (error, stdout, stdin) => {
-                if (error)
+                if (error){
                     reject(error)
+                    return
+                }
                 resolve(path.join(TEMP_DIR, tempfileID+".mp3"))
             }
         )
