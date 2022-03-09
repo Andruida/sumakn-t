@@ -7,6 +7,7 @@ module.exports = function(vonage) {
     const basicAuth = require('express-basic-auth');
     const fs = require("fs");
     const path = require("path")
+    const serveIndex = require('serve-index')
 
     const sumakAuth = basicAuth({
         users: config.users, 
@@ -75,6 +76,9 @@ module.exports = function(vonage) {
             }
         })
     })
+
+    const recordingsPath = path.join(__dirname, "../data/recordings")
+    router.use("/recordings", sumakAuth, serveIndex(recordingsPath), express.static(recordingsPath))
 
     router.post("/start", sumakAuth, (req, res) => {
         if (fs.existsSync(path.join(__dirname, "../data/.incall"))) {

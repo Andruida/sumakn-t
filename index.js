@@ -40,7 +40,7 @@ const vonage = new Vonage({
 
 app.use("/api", require("./routers/api")(vonage))
 app.use("/events", require("./routers/events")(vonage))
-app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, "public")))
 
 app.listen(config.port, () => {
     // console.log(`Example app listening at http://localhost:${config.port}`)

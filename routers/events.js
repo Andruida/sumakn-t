@@ -4,9 +4,11 @@ module.exports = function(vonage) {
     const router = express.Router()
     const path = require("path")
     const fs = require("fs");
+    const dformat = require('date-format');
 
     router.post("/recording", (req, res) => {
-        vonage.files.save(req.body.recording_url, path.join(__dirname, "../data/recordings/", Date.now()+".wav"), (err, res) => {
+        const filename = dformat.asString('yy.MM.dd_hh:mm:ss', new Date());
+        vonage.files.save(req.body.recording_url, path.join(__dirname, "../data/recordings/", filename+".wav"), (err, res) => {
             if(err) { console.error(err); }
             else {
                 console.log(res);
