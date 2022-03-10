@@ -11,7 +11,7 @@ require("./Float32Array.concat");
 const TEMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "transcoder-storage-"));
 const PAUSE = require("../config.json")["pause"] || 1;
 
-module.exports = async function (nums) {
+module.exports = async function (nums, checkOnly=false) {
     var available_files = fs.readdirSync(path.join(__dirname, "../audio")).filter((item) => item.endsWith(".wav"))
     var number_map = {}
     available_files.forEach((file) => {
@@ -46,17 +46,20 @@ module.exports = async function (nums) {
     const tempfileID = uuidv4()
     fs.writeFileSync(path.join(TEMP_DIR, tempfileID+".wav"), wav.encode([pcm_data], {sampleRate, float: true, bitDepth: 32}))
 
-
-    return await new Promise((resolve, reject) => {
-        exec(shellescape(["ffmpeg", "-i", path.join(TEMP_DIR, tempfileID+".wav"), "-filter:a", "volume="+(config.volume || 1)+",loudnorm", path.join(TEMP_DIR, tempfileID+".mp3")]), 
-            (error, stdout, stdin) => {
-                if (error){
-                    reject(error)
-                    return
+    if (checkOnly) {
+        return true
+    } else {
+        return await new Promise((resolve, reject) => {
+            exec(shellescape(["ffmpeg", "-i", path.join(TEMP_DIR, tempfileID+".wav"), "-filter:a", "volume="+(config.volume || 1)+",loudnorm", path.join(TEMP_DIR, tempfileID+".mp3")]), 
+                (error, stdout, stdin) => {
+                    if (error){
+                        reject(error)
+                        return
+                    }
+                    resolve(path.join(TEMP_DIR, tempfileID+".mp3"))
                 }
-                resolve(path.join(TEMP_DIR, tempfileID+".mp3"))
-            }
-        )
-    })
+            )
+        })
+    }
     
 }

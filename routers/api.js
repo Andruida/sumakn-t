@@ -80,7 +80,7 @@ module.exports = function(vonage) {
     const recordingsPath = path.join(__dirname, "../data/recordings")
     router.use("/recordings", sumakAuth, serveIndex(recordingsPath), express.static(recordingsPath))
 
-    router.post("/start", sumakAuth, (req, res) => {
+    router.post("/start", sumakAuth, async (req, res) => {
         if (fs.existsSync(path.join(__dirname, "../data/.incall"))) {
             res.status(400)
             res.json({error: true, message: "Már másik hívás folyamatban!"})
@@ -94,6 +94,11 @@ module.exports = function(vonage) {
         if (typeof req.body.nums != typeof []) {
             res.status(400)
             res.json({error: true, message:"Kihagytad a számokat!"})
+            return
+        }
+        if (!(await createVoice(req.body.nums, true))) {
+            res.status(400)
+            res.json({error: true, message: "A választott számok között van nem elérhető! (jelenleg az 1-50 tartományban az összes, 50-100 tartományban csak a prímszámok elérhetőek)"})
             return
         }
         let nums=req.body.nums.join("%2C")
