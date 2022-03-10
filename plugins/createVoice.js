@@ -10,6 +10,7 @@ require("./Float32Array.concat");
 
 const TEMP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "transcoder-storage-"));
 const PAUSE = require("../config.json")["pause"] || 1;
+const INSANITY = require("../config.json")["insanityTimer"] || 30;
 
 module.exports = async function (nums, checkOnly=false) {
     var available_files = fs.readdirSync(path.join(__dirname, "../audio")).filter((item) => item.endsWith(".wav"))
@@ -43,6 +44,7 @@ module.exports = async function (nums, checkOnly=false) {
         pcm_data = pcm_data.concat(result.channelData[0])
         pcm_data = pcm_data.concat(new Float32Array(sampleRate*PAUSE))
     }
+    pcm_data = pcm_data.concat(new Float32Array(sampleRate*INSANITY))
     const tempfileID = uuidv4()
     fs.writeFileSync(path.join(TEMP_DIR, tempfileID+".wav"), wav.encode([pcm_data], {sampleRate, float: true, bitDepth: 32}))
 

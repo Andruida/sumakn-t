@@ -115,7 +115,7 @@ module.exports = function(vonage) {
             event_method: "POST",
             ncco: [
                 {action: "record", split: "conversation", eventUrl: [`https://${config.vonage.host}/events/recording`]},
-                {action: "stream", level:1,streamUrl: [`https://${config.vonage.host}/api/createVoice?nums=${nums}`]}
+                {action: "stream", level:1, streamUrl: [`https://${config.vonage.host}/api/createVoice?nums=${nums}`]}
             ]
         }, (error, response) => {
             if (error) {

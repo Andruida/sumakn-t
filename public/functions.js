@@ -60,7 +60,7 @@ function saveFields() {
 function startCall() {
     saveFields()
     if (validator()) {
-        var nums = $("#nums").val().replace(/\s/, "").split(",")
+        var nums = $("#nums").val().replace(/\s/g, "").split(",")
         if (nums.indexOf("") != -1) nums.splice(nums.indexOf(""), 1)
         $.post("/api/start", {
             phone: $("#phone").val(),
@@ -99,7 +99,7 @@ function validator() {
         $("#phone").removeClass("is-invalid").addClass("is-valid")
     }
 
-    var nums = $("#nums").val().replace(/\s/, "").split(",")
+    var nums = $("#nums").val().replace(/\s/g, "").split(",")
     if (nums.indexOf("") != -1) nums.splice(nums.indexOf(""), 1)
     //console.log(nums)
     if (nums.length > 0 && nums.every(function(v) {return !isNaN(v)})) {
