@@ -81,7 +81,7 @@ module.exports = function(vonage) {
     router.use("/recordings", sumakAuth, serveIndex(recordingsPath), express.static(recordingsPath))
 
     router.post("/start", sumakAuth, async (req, res) => {
-        if (fs.existsSync(path.join(__dirname, "../data/.incall"))) {
+        if (!req.body.bgMode && fs.existsSync(path.join(__dirname, "../data/.incall"))) {
             res.status(400)
             res.json({error: true, message: "Már másik hívás folyamatban!"})
             return
@@ -125,7 +125,8 @@ module.exports = function(vonage) {
                 res.json({error:true, message:"Belső hiba történt"})
             } else {
                 if (response) {
-                    fs.writeFileSync(path.join(__dirname, "../data/.incall"), response.uuid)
+                    if (!req.body.bgMode)
+                        fs.writeFileSync(path.join(__dirname, "../data/.incall"), response.uuid)
                     res.json({error:false, message:"OK"})
                     return
                 }

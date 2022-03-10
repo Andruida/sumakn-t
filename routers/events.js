@@ -20,8 +20,10 @@ module.exports = function(vonage) {
 
     router.post("/", (req, res) => {
         if (req.body.status == "completed") {
-            if (fs.existsSync(path.join(__dirname, "../data/.incall"))) {
-                fs.rmSync(path.join(__dirname, "../data/.incall"))
+            const filepath = path.join(__dirname, "../data/.incall")
+            console.log(req.body)
+            if (fs.existsSync(filepath) && fs.readFileSync(filepath) == req.body.uuid) {
+                fs.rmSync(filepath)
             }
         }
         // console.log(req.body)
